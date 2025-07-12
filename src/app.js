@@ -4,19 +4,23 @@ const connectDB = require('./config/database')
 const User = require("./models/user")
 const Admin = require('./models/admin');
 
+//  used for read the json data for incoming request from the body of postman
+app.use(express.json());
+
+
 app.post('/adminsignup',async(req,res)=>{
     const admin = new Admin({name:'Admin',password:'Admin@123'});
     await admin.save();
     res.status(201).json({message:'Admin created Successfully'});
 })
 app.post('/signup', async (req,res)=>{
-
+    console.log(req.body);
     // creating a new instnace of user model
     const user = new User({
-        firstName: "Manu",
-        lastName : "ssharcs",
-        emailId :"manu1000@gmail.com",
-        password:"manu@123"
+        firstName: "Sahil",
+        lastName : "Raj",
+        emailId :"sahil@gmail.com",
+        password:"sahil@123"
 
 });
     try{

@@ -1,11 +1,15 @@
 const mongoose = require('mongoose')
+require('dotenv').config();
+
+const uri = process.env.MONGODB_URI;
+console.log(uri);
 
 
+console.log("🧪 Loaded URI from .env:", uri || "undefined");
 
 
-const url = "mongodb+srv://ritvikbharti_01:Ritvik%40123@cluster0.djocmo5.mongodb.net/SnapDev"
 const connectDB = async()=>{
-    await mongoose.connect(url);
+    await mongoose.connect(uri);
 }
 
 module.exports = connectDB;
