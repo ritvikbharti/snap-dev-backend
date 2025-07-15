@@ -8,21 +8,18 @@ const Admin = require('./models/admin');
 app.use(express.json());
 
 
-app.post('/adminsignup',async(req,res)=>{
-    const admin = new Admin({name:'Admin',password:'Admin@123'});
-    await admin.save();
-    res.status(201).json({message:'Admin created Successfully'});
-})
+
 app.post('/signup', async (req,res)=>{
     console.log(req.body);
+    const user = new User(req.body)
     // creating a new instnace of user model
-    const user = new User({
-        firstName: "Sahil",
-        lastName : "Raj",
-        emailId :"sahil@gmail.com",
-        password:"sahil@123"
+//     const user = new User({
+//         firstName: "Sahil",
+//         lastName : "Raj",
+//         emailId :"sahil@gmail.com",
+//         password:"sahil@123"
 
-});
+// });
     try{
 
         await user.save();
