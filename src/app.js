@@ -53,9 +53,44 @@ app.get('/user',async (req,res)=>{
 
 
 //  Feed-api to get the users from the database
-// app.get('/feed',async (req,res)=>{
+app.get('/feed',async (req,res)=>{
 
-// })
+})
+// delete in database
+
+app.delete('/user',async (req,res)=>{
+    const userId = req.body.userId;
+    try{
+        const user = await User.findByIdAndDelete(userId);
+
+        res.send("User deleted successfully");
+
+    }catch(err){
+        console.log("Some error occured");
+        
+
+    }
+
+})
+
+// Update in database
+
+app.patch('/user',async (req,res)=>{
+    const userId = req.body.userId
+    const userData = req.body;
+    console.log(userData);
+    
+    try{
+        const user = await User.findByIdAndUpdate({_id: userId},userData,{returnDocument : "after",});
+        console.log(user);
+        
+
+        res.send("User data updated successfully");
+
+    }catch(err){
+        res.status(400).send("Error occured");
+    }
+})
 
 connectDB().then(()=>{
     console.log("Database connected Sucessfully!");
