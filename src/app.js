@@ -30,6 +30,32 @@ app.post('/signup', async (req,res)=>{
     }
 })
 
+// get user from the email
+
+app.get('/user',async (req,res)=>{
+    const userEmail = req.body.emailId;    
+    console.log(req.query.emailId)
+    // console.log(userEmail);
+    try{
+        // const users = await User.find({emailId: userEmail});
+        // console.log(user);
+            const user = await User.findOne({emailId:userEmail});
+            console.log(user);
+            if(user) res.send(user);
+            
+            // if(users.length === 0) res.status(404).send("Something went wrong")
+            // else res.send(user);
+    }catch(err){
+        res.send("Error occured");
+    }
+
+})
+
+
+//  Feed-api to get the users from the database
+// app.get('/feed',async (req,res)=>{
+
+// })
 
 connectDB().then(()=>{
     console.log("Database connected Sucessfully!");
