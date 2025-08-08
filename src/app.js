@@ -54,7 +54,24 @@ app.get('/user',async (req,res)=>{
 
 //  Feed-api to get the users from the database
 app.get('/feed',async (req,res)=>{
+        const user = new User({
+        firstName: "Sahil",
+        lastName : "Raj",
+        emailId :"sahil@gmail.com",
+        password:"sahil@123",
+        age:13,
 
+});
+
+    try{
+        await user.save();
+        res.send(user);
+
+    }catch(err){
+        console.log("Error Occured",err);
+        
+    }
+    
 })
 // delete in database
 
