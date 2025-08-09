@@ -3,6 +3,8 @@ const app = express()
 const connectDB = require('./config/database')
 const User = require("./models/user")
 const Admin = require('./models/admin');
+const bcrypt = require('bcrypt')
+const {valiDateSignUpData} = require('./utils/validators')
 
 //  used for read the json data for incoming request from the body of postman
 app.use(express.json());
@@ -10,7 +12,9 @@ app.use(express.json());
 
 
 app.post('/signup', async (req,res)=>{
-    console.log(req.body);
+    // console.log(req.body);
+    
+    
     const user = new User(req.body)
     // creating a new instnace of user model
 //     const user = new User({
@@ -21,15 +25,56 @@ app.post('/signup', async (req,res)=>{
 
 // });
     try{
+    //  -- > Validating the signup Data
+        const {firstName,lastName,emailId,password,age }= req.body;
+        const userEmail = req.body.emailId;
+        valiDateSignUpData(req)
 
+    //  --> Encrypt the password
+        const find = await User.findOne({emailId : userEmail});
+        if(find) res.send("User is already existed");
+        else{
+
+        
+        const passwordHash = await bcrypt.hash(password,10)
+        console.log(passwordHash);
+
+        //  creating new instance of user model
+            const user = new User({
+                firstName,
+                lastName,
+                emailId,
+                age,
+                password : passwordHash,
+
+            })
+        
         await user.save();
         res.send("User added successfully!")
+        }
     }catch(err){
-        console.log(err);
+        res.status(400).send("Error" + err.message);
         
     }
 })
 
+
+app.post('/login', async (req,res)=>{
+    try{
+        const {emailId,password} = req.body;
+        const user = await User.findOne({emailId:emailId});
+        if(!user)  throw new Error("Invalid credentials");
+        const isPasswordValid = await bcrypt.compare(password,user.password);
+        if(isPasswordValid){
+            res.send("Login Successfull!!!");
+        }else{
+            throw new Error("Incorrect Passowrd");
+        }
+
+    }catch(err){
+        res.status(400).send("Error: "+ err.message)
+    }
+})
 // get user from the email
 
 app.get('/user',async (req,res)=>{
