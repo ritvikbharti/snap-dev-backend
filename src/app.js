@@ -5,11 +5,12 @@ const User = require("./models/user")
 const Admin = require('./models/admin');
 const bcrypt = require('bcrypt')
 const {valiDateSignUpData} = require('./utils/validators')
-
+const cookieParser = require('cookie-parser')
 //  used for read the json data for incoming request from the body of postman
 app.use(express.json());
 
-
+// 
+app.use(cookieParser());
 
 app.post('/signup', async (req,res)=>{
     // console.log(req.body);
@@ -62,10 +63,18 @@ app.post('/signup', async (req,res)=>{
 app.post('/login', async (req,res)=>{
     try{
         const {emailId,password} = req.body;
+        const {age} = req.body;
+
         const user = await User.findOne({emailId:emailId});
         if(!user)  throw new Error("Invalid credentials");
         const isPasswordValid = await bcrypt.compare(password,user.password);
         if(isPasswordValid){
+
+            //  Create a JWT TOKEN
+
+            //  Add the token to cookie and send the response back to the user
+            res.cookie('token',"ytdyuiwhclsclvsmvlsvsvclmlm");
+            console.log(age);
             res.send("Login Successfull!!!");
         }else{
             throw new Error("Incorrect Passowrd");
@@ -76,6 +85,14 @@ app.post('/login', async (req,res)=>{
     }
 })
 // get user from the email
+
+app.get('/profile',async (req,res)=>{
+    const cookie = req.cookies;
+    console.log(cookie);
+
+    res.send('reading cookies');
+    
+})
 
 app.get('/user',async (req,res)=>{
     const userEmail = req.body.emailId;    
