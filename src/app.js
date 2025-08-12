@@ -6,6 +6,7 @@ const Admin = require('./models/admin');
 const bcrypt = require('bcrypt')
 const {valiDateSignUpData} = require('./utils/validators')
 const cookieParser = require('cookie-parser')
+const jwt = require('jsonwebtoken')
 //  used for read the json data for incoming request from the body of postman
 app.use(express.json());
 
@@ -71,9 +72,11 @@ app.post('/login', async (req,res)=>{
         if(isPasswordValid){
 
             //  Create a JWT TOKEN
-
+                const token = await jwt.sign({_id:user._id},"Snap-dev@88096");
+                console.log(token);
+                
             //  Add the token to cookie and send the response back to the user
-            res.cookie('token',"ytdyuiwhclsclvsmvlsvsvclmlm");
+            res.cookie('token',token);
             console.log(age);
             res.send("Login Successfull!!!");
         }else{
@@ -88,9 +91,16 @@ app.post('/login', async (req,res)=>{
 
 app.get('/profile',async (req,res)=>{
     const cookie = req.cookies;
-    console.log(cookie);
+    const {token}  = cookie;
+    // console.log(token);
+    
+    const decoded = await jwt.verify(token,"Snap-dev@88096");
+    const {_id} = decoded
+    console.log("The login id  is" + _id);
 
-    res.send('reading cookies');
+    const user = await User.findById(_id);
+
+    res.send(user);
     
 })
 
