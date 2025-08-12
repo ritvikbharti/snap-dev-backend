@@ -90,17 +90,23 @@ app.post('/login', async (req,res)=>{
 // get user from the email
 
 app.get('/profile',async (req,res)=>{
-    const cookie = req.cookies;
-    const {token}  = cookie;
-    // console.log(token);
+    try{
+
+        const cookie = req.cookies;
+        const {token}  = cookie;
+        // console.log(token);
+        if(!token) throw new Error("Your token is expired Login again");
+        
+        const decoded = await jwt.verify(token,"Snap-dev@88096");
+        const {_id} = decoded
+        console.log("The login id  is" + _id);
     
-    const decoded = await jwt.verify(token,"Snap-dev@88096");
-    const {_id} = decoded
-    console.log("The login id  is" + _id);
-
-    const user = await User.findById(_id);
-
-    res.send(user);
+        const user = await User.findById(_id);
+    
+        res.send(user);
+    }catch(err){
+        res.status(400).send("Error Occured: "+ err.message);
+    }
     
 })
 
