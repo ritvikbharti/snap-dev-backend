@@ -4,9 +4,12 @@ const connectDB = require('./config/database')
 const User = require("./models/user")
 const Admin = require('./models/admin');
 const bcrypt = require('bcrypt')
+const {userAuth} = require('./middlewares/auth')
 const {valiDateSignUpData} = require('./utils/validators')
 const cookieParser = require('cookie-parser')
 const jwt = require('jsonwebtoken')
+
+
 //  used for read the json data for incoming request from the body of postman
 app.use(express.json());
 
@@ -72,7 +75,7 @@ app.post('/login', async (req,res)=>{
         if(isPasswordValid){
 
             //  Create a JWT TOKEN
-                const token = await jwt.sign({_id:user._id},"Snap-dev@88096");
+                const token = await jwt.sign({_id:user._id},"Snap-dev@88096",{expiresIn : "1d"});
                 console.log(token);
                 
             //  Add the token to cookie and send the response back to the user
@@ -89,19 +92,12 @@ app.post('/login', async (req,res)=>{
 })
 // get user from the email
 
-app.get('/profile',async (req,res)=>{
+app.get('/profile',userAuth,async (req,res)=>{
     try{
 
-        const cookie = req.cookies;
-        const {token}  = cookie;
-        // console.log(token);
-        if(!token) throw new Error("Your token is expired Login again");
-        
-        const decoded = await jwt.verify(token,"Snap-dev@88096");
-        const {_id} = decoded
-        console.log("The login id  is" + _id);
-    
-        const user = await User.findById(_id);
+   
+        //  All things of authentication are managed by userAuth middleware
+        const user = req.user;
     
         res.send(user);
     }catch(err){
@@ -129,7 +125,12 @@ app.get('/user',async (req,res)=>{
 
 })
 
-
+app.post('/sendconnectionrequest',userAuth, async (req,res)=>{
+    console.log("");
+    const user = req.user;
+    res.send(user.firstName + " send the Connection req!");
+    
+})
 //  Feed-api to get the users from the database
 app.get('/feed',async (req,res)=>{
         const user = new User({
