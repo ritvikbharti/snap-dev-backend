@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
-
-
+const jwt = require('jsonwebtoken')
+const bcrypt = require('bcrypt')
 
 const userSchema = mongoose.Schema({
     firstName: {
@@ -52,7 +52,21 @@ const userSchema = mongoose.Schema({
 
 },{timestamps:true})
 
+// New way to create jwt token
+userSchema.methods.getJWT = async function(){
+    const user = this;
+    const token = await jwt.sign({_id:user._id},"Snap-dev@88096",{expiresIn : "1d"});
+    return token;
 
+}
+
+userSchema.methods.validatePassword = async function(passwordInput){
+    const user = this;
+
+    const isPaswordValid = bcrypt.compare(passwordInput,this.password);
+    return isPaswordValid;
+
+}
 const User = mongoose.model("User",userSchema);
 
 

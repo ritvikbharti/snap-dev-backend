@@ -71,11 +71,12 @@ app.post('/login', async (req,res)=>{
 
         const user = await User.findOne({emailId:emailId});
         if(!user)  throw new Error("Invalid credentials");
-        const isPasswordValid = await bcrypt.compare(password,user.password);
+        const isPasswordValid = await user.validatePassword(password);
         if(isPasswordValid){
 
             //  Create a JWT TOKEN
-                const token = await jwt.sign({_id:user._id},"Snap-dev@88096",{expiresIn : "1d"});
+                // const token = await jwt.sign({_id:user._id},"Snap-dev@88096",{expiresIn : "1d"});
+                const token = await user.getJWT();
                 console.log(token);
                 
             //  Add the token to cookie and send the response back to the user
